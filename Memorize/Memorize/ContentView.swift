@@ -9,13 +9,15 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        // MARK: - ViewBuilder combines list of views in one view and returns it in tuple view
+        ZStack(alignment: .center) {
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(lineWidth: 3)
+            
+            Text("🚜")
         }
-        .padding()
+        .padding(.horizontal)
+        .foregroundColor(.red) // puts color on all views in zstack
     }
 }
 
