@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var emojis: Array<String> = ["✈️", "🚅", "🛳️", "🚀", "🚞", "🛫", "🚆", "⛵️", "🚐", "🚑", "🚒", "🚙"]
-    @State private var emojiCount = 4
+    @State private var emojiCount = 12
     
     var body: some View {
         // MARK: - ViewBuilder combines list of views in one view and returns it in tuple view
@@ -27,38 +27,8 @@ struct ContentView: View {
             
             Spacer()
             
-            HStack {
-                remove
-                Spacer()
-                add
-            }
-            .padding(.horizontal)
         }
         .padding(.horizontal)
-    }
-    
-    
-    // MARK: - Subviews
-    private var remove: some View {
-        Button {
-            if emojiCount > 1 {
-                emojiCount -= 1
-            }
-        } label: {
-            Image(systemName: "minus.circle")
-                .font(.largeTitle)
-        }
-    }
-    
-    private var add: some View {
-        Button {
-            if emojiCount < emojis.count {
-                emojiCount += 1
-            }
-        } label: {
-            Image(systemName: "plus.circle")
-                .font(.largeTitle)
-        }
     }
 }
 
