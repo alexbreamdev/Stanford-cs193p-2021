@@ -12,15 +12,22 @@ import SwiftUI
 class EmojiMemoryGame: ObservableObject {
     static let emojis: Array<String> = ["✈️", "🚅", "🛳️", "🚀", "🚞", "🛫", "🚆", "⛵️", "🚐", "🚑", "🚒", "🚙"]
   
+    // define how many pairs of cards
     static func createMemoryGame() -> MemoryGame<String> {
         MemoryGame(numberOfPairsOfCards: 5) { pairIndex in EmojiMemoryGame.emojis[pairIndex]}
     }
     
     //Type inference and generic function parameter
-    private(set) var model: MemoryGame<String> = EmojiMemoryGame.createMemoryGame()
+    @Published private(set) var model: MemoryGame<String> = EmojiMemoryGame.createMemoryGame()
     
     var cards: Array<MemoryGame<String>.Card> {
         return model.cards
+    }
+    
+    // MARK: - Intent(s)
+    
+    func choose(_ card: MemoryGame<String>.Card) {
+        model.choose(card: card)
     }
 }
 

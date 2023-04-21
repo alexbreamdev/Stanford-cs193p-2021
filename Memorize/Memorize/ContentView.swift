@@ -8,36 +8,35 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var emojis: Array<String> = ["✈️", "🚅", "🛳️", "🚀", "🚞", "🛫", "🚆", "⛵️", "🚐", "🚑", "🚒", "🚙"]
-    @State private var emojiCount = 12
+    @ObservedObject var viewModel: EmojiMemoryGame
     
     var body: some View {
         // MARK: - ViewBuilder combines list of views in one view and returns it in tuple view
-        
-        VStack {
-            ScrollView {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))], spacing: 8) {
-                    ForEach(emojis[0..<emojiCount], id: \.self) { emoji in
-                        CardView(content: emoji)
-                            .aspectRatio(2/3, contentMode: .fit)
-                    }
+        ScrollView {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))], spacing: 8) {
+                ForEach(viewModel.cards) { card in
+                    CardView(card: card)
+                        .aspectRatio(2/3, contentMode: .fit)
+                        .onTapGesture {
+                            withAnimation {
+                                viewModel.choose(card)
+                            }
+                        }
                 }
-                .foregroundColor(.red)
             }
-            
-            Spacer()
-            
         }
+        .foregroundColor(.red)
         .padding(.horizontal)
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
+        let game = EmojiMemoryGame()
         Group {
-            ContentView()
+            ContentView(viewModel: game)
                 .previewDevice("iPhone 14")
-            ContentView()
+            ContentView(viewModel: game)
                 .previewDisplayName("Dark Mode")
                 .preferredColorScheme(.dark)
         }
@@ -45,14 +44,15 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 struct CardView: View {
-    var content: String
-    @State private var isFaceUp: Bool = true
-    @State private var degree: Double = 0
+    let card: MemoryGame<String>.Card
+    private var degree: Double {
+        card.isFaceUp ? 0 : 180
+    }
     
     var body: some View {
         ZStack {
             let shape = RoundedRectangle(cornerRadius: 20)
-            if isFaceUp {
+            if card.isFaceUp {
                 shape
                     .fill()
                     .foregroundColor(.primary)
@@ -61,19 +61,18 @@ struct CardView: View {
                 // stroke loses half of width while in another container
                 shape.strokeBorder(lineWidth: 3)
                 
-                Text(content)
+                Text(card.content)
                     .font(.largeTitle)
                 
+            } else if card.isMatched {
+                shape.opacity(0)
             } else {
                 shape.fill()
             }
+            
+            
         }
         .rotation3DEffect(.degrees(degree), axis: (x: 0, y: 1, z: 0), anchor: .center)
-        .onTapGesture {
-            withAnimation {
-                isFaceUp.toggle()
-                degree = degree == 0 ? 180 : 0
-            }
-        }
+        
     }
 }
