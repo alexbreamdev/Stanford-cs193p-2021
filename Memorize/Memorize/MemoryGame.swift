@@ -10,10 +10,13 @@ import Foundation
 // MARK: - Model
 struct MemoryGame<CardContent> where CardContent : Equatable {
     private(set) var cards: Array<Card>
-    private var indexOfTheOneAndOnlyFaceUpCard: Int?
+    private var indexOfTheOneAndOnlyFaceUpCard: Int? {
+        get { cards.indices.filter { cards[$0].isFaceUp }.oneAndOnly }
+        set { cards.indices.forEach { cards[$0].isFaceUp = ($0 == newValue)} }
+    }
     
     init(numberOfPairsOfCards: Int, createCardContent: (Int) -> CardContent) {
-        self.cards = Array<Card>()
+        self.cards = []
         // add number of pairs x 2 to cards array
         for pairIndex in 0..<numberOfPairsOfCards {
             let content: CardContent = createCardContent(pairIndex)
@@ -34,27 +37,26 @@ struct MemoryGame<CardContent> where CardContent : Equatable {
                     cards[index].isMatched = true
                     cards[potentialMatchIndex].isMatched = true
                 }
-                // 4.1 make index of previously selected card nil
-                indexOfTheOneAndOnlyFaceUpCard = nil
+                cards[index].isFaceUp = true
             } else {
-                // 5. if cards not matched, turn them all down
-                for index in cards.indices {
-                    cards[index].isFaceUp = false
-                }
                 // 5. last picked card stays face up
                 indexOfTheOneAndOnlyFaceUpCard = index
             }
-            cards[index].isFaceUp.toggle()
         }
     }
     
     // MARK: - Inner struct -> out of context calls can't reach this struct
     struct Card: Identifiable {
-        var id: Int
-        
-        var isFaceUp: Bool = false
-        var isMatched: Bool = false
-        var content: CardContent // generic definition goes to outer struct
+        let id: Int
+        var isFaceUp = false
+        var isMatched = false
+        let content: CardContent // generic definition goes to outer struct
+    }
+}
+
+extension Array {
+    var oneAndOnly: Element? {
+        return self.count == 1 ? self.first : nil
     }
 }
 

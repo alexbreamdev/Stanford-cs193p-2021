@@ -10,23 +10,24 @@ import SwiftUI
 // MARK: - View Model
 // separates view from model
 class EmojiMemoryGame: ObservableObject {
-    static let emojis: Array<String> = ["✈️", "🚅", "🛳️", "🚀", "🚞", "🛫", "🚆", "⛵️", "🚐", "🚑", "🚒", "🚙"]
+    typealias Card = MemoryGame<String>.Card
+    private static let emojis = ["✈️", "🚅", "🛳️", "🚀", "🚞", "🛫", "🚆", "⛵️", "🚐", "🚑", "🚒", "🚙"]
   
     // define how many pairs of cards
-    static func createMemoryGame() -> MemoryGame<String> {
+    private static func createMemoryGame() -> MemoryGame<String> {
         MemoryGame(numberOfPairsOfCards: 5) { pairIndex in EmojiMemoryGame.emojis[pairIndex]}
     }
     
     //Type inference and generic function parameter
-    @Published private(set) var model: MemoryGame<String> = EmojiMemoryGame.createMemoryGame()
+    @Published private(set) var model = EmojiMemoryGame.createMemoryGame()
     
-    var cards: Array<MemoryGame<String>.Card> {
+    var cards: Array<Card> {
         return model.cards
     }
     
     // MARK: - Intent(s)
     
-    func choose(_ card: MemoryGame<String>.Card) {
+    func choose(_ card: Card) {
         model.choose(card: card)
     }
 }
